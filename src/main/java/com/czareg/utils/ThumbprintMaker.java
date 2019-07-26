@@ -1,6 +1,12 @@
 package com.czareg.utils;
 
+import com.czareg.model.StringFormat;
+
 public class ThumbprintMaker {
+	private static final String UNSUPPORTED_THUMBPRINT_CHARS = "[^a-fA-F0-9]";
+	private static final String COLON = ":";
+	public static StringFormat format = StringFormat.UPPERCASE;
+
 	private ThumbprintMaker() {
 	}
 
@@ -8,18 +14,31 @@ public class ThumbprintMaker {
 		String cleanThumbPrint = cleanUserInput(startingThumbPrint);
 		StringBuilder properThumbPrint = new StringBuilder(cleanThumbPrint);
 		insertColons(cleanThumbPrint, properThumbPrint);
-		return properThumbPrint.toString();
+		return applyCurrentFormat(properThumbPrint.toString());
+	}
+
+	public static String applyCurrentFormat(String unformattedProperThumbprint) {
+		switch (format) {
+		case UPPERCASE:
+			return unformattedProperThumbprint.toUpperCase();
+		case LOWERCASE:
+			return unformattedProperThumbprint.toLowerCase();
+		case MIXED:
+			return unformattedProperThumbprint;
+		}
+		return null;
+
 	}
 
 	private static String cleanUserInput(String startingThumbPrint) {
-		return startingThumbPrint.strip().replaceAll("[^a-fA-F0-9]", "");
+		return startingThumbPrint.strip().replaceAll(UNSUPPORTED_THUMBPRINT_CHARS, "");
 	}
 
 	private static void insertColons(String startingThumbPrint, StringBuilder properThumbPrint) {
 		int howManyColonsToAdd = countColons(startingThumbPrint);
 		for (int colonCounter = 0, colonIndex = 2; colonCounter < howManyColonsToAdd; colonCounter++, colonIndex = colonIndex
 				+ 3) {
-			properThumbPrint.insert(colonIndex, ":");
+			properThumbPrint.insert(colonIndex, COLON);
 		}
 	}
 
