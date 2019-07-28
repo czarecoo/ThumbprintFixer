@@ -28,8 +28,8 @@ public class ThumbprintFixerUI extends Application {
 
 	private static final String UPPERCASE = "Uppercase";
 	private static final String LOWERCASE = "Lowercase";
-	private static final String MIXED = "Mixed";
-	private static final String LABEL_TEXT = "Enter thumbprint without colons.";
+	private static final String MIXEDCASE = "Mixedcase";
+	private static final String TOOLTIP_TEXT = "Enter thumbprint without colons.";
 	private static final String TEXTFIELD_PROPMPT_TEXT = "Enter thumbprint here.";
 	private static final String BUTTON_TEXT = "Fix thumbprint";
 	private static final String ICON_FILENAME = "icon.png";
@@ -54,6 +54,7 @@ public class ThumbprintFixerUI extends Application {
 	private HBox createRadioHBox() {
 		final ToggleGroup group = new ToggleGroup();
 		group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+			@Override
 			public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
 				if (newValue.getUserData() != null) {
 					ThumbprintMaker.format = (StringFormat) newValue.getUserData();
@@ -67,12 +68,15 @@ public class ThumbprintFixerUI extends Application {
 		rb1.setToggleGroup(group);
 		rb1.setSelected(true);
 		rb1.setUserData(StringFormat.UPPERCASE);
+		rb1.setId("radioButtonUppercase");
 		RadioButton rb2 = new RadioButton(LOWERCASE);
 		rb2.setToggleGroup(group);
 		rb2.setUserData(StringFormat.LOWERCASE);
-		RadioButton rb3 = new RadioButton(MIXED);
+		rb2.setId("radioButtonLowercase");
+		RadioButton rb3 = new RadioButton(MIXEDCASE);
 		rb3.setToggleGroup(group);
-		rb3.setUserData(StringFormat.MIXED);
+		rb3.setUserData(StringFormat.MIXEDCASE);
+		rb3.setId("radioButtonMixedcase");
 		HBox hb = new HBox();
 		hb.getChildren().addAll(rb1, rb2, rb3);
 		hb.setSpacing(10);
@@ -84,6 +88,7 @@ public class ThumbprintFixerUI extends Application {
 		textField = new TextField();
 		configureTextfield(textField);
 		Button fixButton = new Button(BUTTON_TEXT);
+		fixButton.setId("fixButton");
 		fixButton.setOnAction(createAction(textField));
 		HBox hb = new HBox();
 		hb.getChildren().addAll(textField, fixButton);
@@ -94,7 +99,8 @@ public class ThumbprintFixerUI extends Application {
 
 	private void configureTextfield(final TextField textField) {
 		textField.setMinWidth(400.0);
-		textField.setTooltip(new Tooltip(LABEL_TEXT));
+		textField.setId("textField");
+		textField.setTooltip(new Tooltip(TOOLTIP_TEXT));
 		final Clipboard clipboard = Clipboard.getSystemClipboard();
 		if (clipboard.hasString()) {
 			textField.setText(clipboard.getString());
@@ -104,18 +110,16 @@ public class ThumbprintFixerUI extends Application {
 	}
 
 	private EventHandler<ActionEvent> createAction(final TextField textField) {
-		return new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent e) {
-				if (!textField.getText().isBlank()) {
-					String thumbprint = ThumbprintMaker.make(textField.getText());
-					textField.setText(thumbprint);
-					final Clipboard clipboard = Clipboard.getSystemClipboard();
-					final ClipboardContent content = new ClipboardContent();
-					content.putString(thumbprint);
-					clipboard.setContent(content);
-				}
-				textField.requestFocus();
+		return (ActionEvent e) -> {
+			if (!textField.getText().isBlank()) {
+				String thumbprint = ThumbprintMaker.make(textField.getText());
+				textField.setText(thumbprint);
+				final Clipboard clipboard = Clipboard.getSystemClipboard();
+				final ClipboardContent content = new ClipboardContent();
+				content.putString(thumbprint);
+				clipboard.setContent(content);
 			}
+			textField.requestFocus();
 		};
 	}
 

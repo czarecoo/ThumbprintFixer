@@ -12,10 +12,10 @@ public class Main {
 			System.out.println(ThumbprintMaker.make(args[0]));
 			break;
 		default:
-			if (args[1].contains("lower")) {
+			if (args[1].contains("low") || args[1].contains("l")) {
 				ThumbprintMaker.format = StringFormat.LOWERCASE;
-			} else if (args[1].contains("mix")) {
-				ThumbprintMaker.format = StringFormat.MIXED;
+			} else if (args[1].contains("mix") || args[1].contains("m")) {
+				ThumbprintMaker.format = StringFormat.MIXEDCASE;
 			} else {
 				ThumbprintMaker.format = StringFormat.UPPERCASE;
 			}

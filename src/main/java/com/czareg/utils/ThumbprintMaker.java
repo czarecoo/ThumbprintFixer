@@ -18,16 +18,7 @@ public class ThumbprintMaker {
 	}
 
 	public static String applyCurrentFormat(String unformattedProperThumbprint) {
-		switch (format) {
-		case UPPERCASE:
-			return unformattedProperThumbprint.toUpperCase();
-		case LOWERCASE:
-			return unformattedProperThumbprint.toLowerCase();
-		case MIXED:
-			return unformattedProperThumbprint;
-		}
-		return null;
-
+		return format.convertToFormat(unformattedProperThumbprint);
 	}
 
 	private static String cleanUserInput(String startingThumbPrint) {
