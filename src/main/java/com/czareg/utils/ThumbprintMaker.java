@@ -22,7 +22,7 @@ public class ThumbprintMaker {
 	}
 
 	private static String cleanUserInput(String startingThumbPrint) {
-		return startingThumbPrint.strip().replaceAll(UNSUPPORTED_THUMBPRINT_CHARS, "");
+		return startingThumbPrint.trim().replaceAll(UNSUPPORTED_THUMBPRINT_CHARS, "");
 	}
 
 	private static void insertColons(String startingThumbPrint, StringBuilder properThumbPrint) {
