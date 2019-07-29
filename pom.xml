@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.czareg</groupId>
 	<artifactId>ThumbprintFixer</artifactId>
-	<version>0.92a</version>
+	<version>0.91</version>
 	<packaging>jar</packaging>
 	<name>ThumbprintFixer</name>
 	<description>This app inserts colons to colonless thumbprint</description>
@@ -21,7 +21,6 @@
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-controls</artifactId>
 			<version>12.0.1</version>
-			<classifier>win</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
