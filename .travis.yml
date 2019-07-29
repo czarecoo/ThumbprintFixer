@@ -7,7 +7,10 @@ before_install:
 before_deploy:
   - git config --global user.email "travis@travis-ci.org"
   - git config --global user.name "Travis"
-  - export GIT_TAG="$(cat maven-archiver/pom.properties | grep version= | cut -c9-)"
+  - ls
+  - dir
+  - ls ..
+  - export GIT_TAG="$(cat ../maven-archiver/pom.properties | grep version= | cut -c9-)"
   - git tag -a $GIT_TAG -m "Generated from TravisCI at $(date +'%H:%M') on $(date +'%d/%m/%y')."
   - git remote add origin2 https://${GITHUB_TOKEN}@github.com/czarecoo/ThumbprintFixer.git
   - git push origin2 --tags
