@@ -7,7 +7,7 @@ before_install:
 before_deploy:
   - git config --global user.email "travis@travis-ci.org"
   - git config --global user.name "Travis"
-  - export GIT_TAG="$(date +'%d%m%y%H%M')"
+  - export GIT_TAG="$(cat maven-archiver/pom.properties | grep version= | cut -c9-)"
   - git tag -a $GIT_TAG -m "Generated from TravisCI at $(date +'%H:%M') on $(date +'%d/%m/%y')."
   - git remote add origin2 https://${GITHUB_TOKEN}@github.com/czarecoo/ThumbprintFixer.git
   - git push origin2 --tags
@@ -15,6 +15,6 @@ before_deploy:
 deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
-  file: "/home/travis/build/czarecoo/ZPI_2018_Dzienni_1/build/libs/ThumbprintFixer-*"
+  file: "/home/travis/build/czarecoo/ThumbprintFixer/build/libs/ThumbprintFixer-*"
   skip_cleanup: true
   file_glob: "true"
