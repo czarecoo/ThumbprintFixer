@@ -1,0 +1,22 @@
+language: java
+jdk: 
+  - oraclejdk8
+before_install:
+  - mvn package
+before_deploy:
+  - git config --global user.email "travis@travis-ci.org"
+  - git config --global user.name "Travis"
+  - export GIT_TAG="$(date +'%d%m%y%H%M')"
+  - git tag -a $GIT_TAG -m "Generated from TravisCI at $(date +'%H:%M') on $(date +'%d/%m/%y')."
+  - git remote add origin2 https://${GITHUB_TOKEN}@github.com/czarecoo/ThumbprintFixer.git
+  - git push origin2 --tags
+  - git fetch origin2
+deploy:
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  file: "build/libs/*"
+  skip_cleanup: true
+  file_glob: "true"
+      on:
+        branch: master
+        jdk: oraclejdk8
