@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 import com.czareg.model.StringFormat;
 import com.czareg.utils.ThumbprintMaker;
 
-class ThumbprintMakerMakeTests {
+class ThumbprintMakerTests {
 
 	@ParameterizedTest(name = "{0} => {1}")
 	@CsvFileSource(resources = "/testCases.csv", delimiter = ';')

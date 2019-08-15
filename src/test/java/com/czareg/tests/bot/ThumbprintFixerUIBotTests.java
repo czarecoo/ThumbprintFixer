@@ -22,6 +22,10 @@ public class ThumbprintFixerUIBotTests extends ApplicationTest {
 		new ThumbprintFixerUI().start(stage);
 	}
 
+	private void waitForProcessingToFinish() {
+		sleep(5000);
+	}
+
 	@Test
 	public void shouldContainAllAppControls() {
 		FxAssert.verifyThat("#fixButton", LabeledMatchers.hasText("Fix thumbprint"));
@@ -38,6 +42,7 @@ public class ThumbprintFixerUIBotTests extends ApplicationTest {
 		clickOn("#radioButtonUppercase");
 		clickOn("#textField").write(input);
 		clickOn("#fixButton");
+		waitForProcessingToFinish();
 		FxAssert.verifyThat("#textField", (TextField tf) -> tf.getText().equals(expected.toUpperCase()));
 		clickOn("#radioButtonUppercase");
 	}
@@ -48,6 +53,7 @@ public class ThumbprintFixerUIBotTests extends ApplicationTest {
 		clickOn("#radioButtonLowercase");
 		clickOn("#textField").write(input);
 		clickOn("#fixButton");
+		waitForProcessingToFinish();
 		FxAssert.verifyThat("#textField", (TextField tf) -> tf.getText().equals(expected.toLowerCase()));
 		clickOn("#radioButtonUppercase");
 	}
@@ -58,6 +64,7 @@ public class ThumbprintFixerUIBotTests extends ApplicationTest {
 		clickOn("#radioButtonMixedcase");
 		clickOn("#textField").write(input);
 		clickOn("#fixButton");
+		waitForProcessingToFinish();
 		FxAssert.verifyThat("#textField", (TextField tf) -> tf.getText().equals(expected));
 		clickOn("#radioButtonUppercase");
 	}

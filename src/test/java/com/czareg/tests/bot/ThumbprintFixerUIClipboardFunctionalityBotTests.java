@@ -32,6 +32,7 @@ class ThumbprintFixerUIClipboardFunctionalityBotTests extends ApplicationTest {
 	public void clickingOnButtonShouldCreateUppercaseFormattedThumbprint() {
 		FxAssert.verifyThat("#textField", (TextField tf) -> tf.getText().equals(BAD_THUMBPRINT_FROM_CLIPBOARD));
 		clickOn("#fixButton");
+		sleep(5000);
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {

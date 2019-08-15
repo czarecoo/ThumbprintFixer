@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.czareg</groupId>
 	<artifactId>ThumbprintFixer</artifactId>
-	<version>0.91</version>
+	<version>1.0</version>
 	<packaging>jar</packaging>
 	<name>ThumbprintFixer</name>
 	<description>This app inserts colons to colonless thumbprint</description>
@@ -12,6 +12,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.release>8</maven.compiler.release>
 		<mainClassName.property>Main</mainClassName.property>
 		<junit.jupiter.version>5.5.1</junit.jupiter.version>
 	</properties>

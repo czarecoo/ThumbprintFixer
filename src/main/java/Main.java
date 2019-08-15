@@ -1,5 +1,6 @@
 import com.czareg.ThumbprintFixerUI;
 import com.czareg.model.StringFormat;
+import com.czareg.utils.ThumbprintGetter;
 import com.czareg.utils.ThumbprintMaker;
 
 public class Main {
@@ -9,7 +10,7 @@ public class Main {
 			ThumbprintFixerUI.main();
 			break;
 		case 1:
-			System.out.println(ThumbprintMaker.make(args[0]));
+			System.out.println(makeThumbprint(args[0]));
 			break;
 		default:
 			if (args[1].contains("low") || args[1].contains("l")) {
@@ -19,8 +20,18 @@ public class Main {
 			} else {
 				ThumbprintMaker.format = StringFormat.UPPERCASE;
 			}
-			System.out.println(ThumbprintMaker.make(args[0]));
+
+			System.out.println(makeThumbprint(args[0]));
 			break;
 		}
+	}
+
+	private static String makeThumbprint(String userInput) {
+		String thumbprint = userInput;
+		try {
+			thumbprint = ThumbprintGetter.get(userInput);
+		} catch (Exception e) {
+		}
+		return ThumbprintMaker.make(thumbprint);
 	}
 }

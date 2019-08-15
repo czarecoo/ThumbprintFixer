@@ -2,9 +2,9 @@ package com.czareg.utils;
 
 import com.czareg.model.StringFormat;
 
+import configs.Config;
+
 public class ThumbprintMaker {
-	private static final String UNSUPPORTED_THUMBPRINT_CHARS = "[^a-fA-F0-9]";
-	private static final String COLON = ":";
 	public static StringFormat format = StringFormat.UPPERCASE;
 
 	private ThumbprintMaker() {
@@ -22,14 +22,14 @@ public class ThumbprintMaker {
 	}
 
 	private static String cleanUserInput(String startingThumbPrint) {
-		return startingThumbPrint.trim().replaceAll(UNSUPPORTED_THUMBPRINT_CHARS, "");
+		return startingThumbPrint.trim().replaceAll(Config.UNSUPPORTED_THUMBPRINT_CHARS, "");
 	}
 
 	private static void insertColons(String startingThumbPrint, StringBuilder properThumbPrint) {
 		int howManyColonsToAdd = countColons(startingThumbPrint);
 		for (int colonCounter = 0, colonIndex = 2; colonCounter < howManyColonsToAdd; colonCounter++, colonIndex = colonIndex
 				+ 3) {
-			properThumbPrint.insert(colonIndex, COLON);
+			properThumbPrint.insert(colonIndex, Config.COLON);
 		}
 	}
 

@@ -1,5 +1,8 @@
 package com.czareg;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import com.czareg.model.StringFormat;
 import com.czareg.utils.ThumbprintMaker;
 
@@ -35,17 +38,21 @@ public class ThumbprintFixerUI extends Application {
 	private static final String ICON_FILENAME = "icon.png";
 	private static final String APPLICATION_TITLE = "Thumbprint Fixer";
 	private TextField textField;
+	private Button fixButton;
+	ExecutorService executorService;
 
 	@Override
 	public void start(Stage stage) {
+		executorService = Executors.newFixedThreadPool(1);
 		HBox controlsHBox = createTextFieldAndButtonHBox();
 		HBox radioBtnsHBox = createRadioHBox();
 		VBox vbox = new VBox();
 		vbox.getChildren().addAll(controlsHBox, radioBtnsHBox);
 		vbox.setAlignment(Pos.CENTER);
 		StackPane stackPane = new StackPane(vbox);
-		Scene scene = new Scene(stackPane, 540, 80);
+		Scene scene = new Scene(stackPane, 540, 60);
 		stage.setTitle(APPLICATION_TITLE);
+		stage.setResizable(false);
 		stage.setScene(scene);
 		stage.getIcons().add(new Image(ICON_FILENAME));
 		stage.show();
@@ -87,9 +94,10 @@ public class ThumbprintFixerUI extends Application {
 	private HBox createTextFieldAndButtonHBox() {
 		textField = new TextField();
 		configureTextfield(textField);
-		Button fixButton = new Button(BUTTON_TEXT);
+		fixButton = new Button(BUTTON_TEXT);
 		fixButton.setId("fixButton");
-		fixButton.setOnAction(createAction(textField));
+		fixButton.setOnAction(createFixButtonAction(textField));
+		fixButton.setDefaultButton(true);
 		HBox hb = new HBox();
 		hb.getChildren().addAll(textField, fixButton);
 		hb.setSpacing(10);
@@ -109,18 +117,46 @@ public class ThumbprintFixerUI extends Application {
 		}
 	}
 
-	private EventHandler<ActionEvent> createAction(final TextField textField) {
+	private EventHandler<ActionEvent> createFixButtonAction(final TextField textField) {
 		return (ActionEvent e) -> {
-			if (!textField.getText().isBlank()) {
-				String thumbprint = ThumbprintMaker.make(textField.getText());
-				textField.setText(thumbprint);
-				final Clipboard clipboard = Clipboard.getSystemClipboard();
-				final ClipboardContent content = new ClipboardContent();
-				content.putString(thumbprint);
-				clipboard.setContent(content);
+			if (!textField.getText().isEmpty()) {
+				makeThumbprint(textField.getText());
 			}
 			textField.requestFocus();
 		};
+	}
+
+	private void makeThumbprint(String userInput) {
+		CreateThumbprintTask task = new CreateThumbprintTask(userInput);
+
+		task.setOnRunning((succeesesEvent) -> {
+			fixButton.setDisable(true);
+			fixButton.setText("Processing.");
+		});
+
+		task.setOnSucceeded((succeededEvent) -> {
+			fixButton.setDisable(false);
+			fixButton.setText(BUTTON_TEXT);
+
+			String thumbprint = task.getValue();
+			textField.setText(thumbprint);
+			copyResultToClipboard(thumbprint);
+		});
+
+		executorService.execute(task);
+	}
+
+	@Override
+	public void stop() throws Exception {
+		super.stop();
+		executorService.shutdown();
+	}
+
+	private void copyResultToClipboard(String thumbprint) {
+		final Clipboard clipboard = Clipboard.getSystemClipboard();
+		final ClipboardContent content = new ClipboardContent();
+		content.putString(thumbprint);
+		clipboard.setContent(content);
 	}
 
 	public static void main() {
