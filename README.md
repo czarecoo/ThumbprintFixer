@@ -17,17 +17,22 @@ You can see that result matches real page's thumbprint.
 ![main app window3](https://www.dropbox.com/s/3l23rquq2tl90ij/3.png?raw=1)
 
 ## Installation
+Type
+```bash
+mvn clean javafx:run
+```
+to run application from maven.
 
+or type
 ```bash
 mvn package
-
 ```
-The jarfile will be created in taget/
+to get jar file (it will be created in target/ directory)
 
 ## Usage
 
 ```bash
-double click jar 
+double click jar file to start app's javafx gui
 ```
 or 
 ```bash
