@@ -1,5 +1,7 @@
 # ThumbprintFixer
 This app inserts colons to colonless thumbprint.
+Click [here](https://github.com/czarecoo/ThumbprintFixer/releases/download/v1.0/ThumbprintFixer-1.0.jar) to download version 1.0.
+(GUI is windows only)
 
 ## How to use Application
 Type url or some text into textbox. (app will automaticly paste any string you have saved in your clipboard on start).
