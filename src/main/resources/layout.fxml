@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.czareg.ThumbprintFixerUI">
+   <children>
+      <HBox alignment="CENTER" spacing="10.0">
+         <children>
+            <TextField id="textField" fx:id="textField" minWidth="400.0" promptText="Enter thumbprint without colons or url." />
+            <Button id="fixButton" fx:id="fixButton" defaultButton="true" mnemonicParsing="false" prefHeight="32.0" prefWidth="102.4" style="-fx-background-color: #008CBA;" text="Fix thumbprint" textFill="WHITE" />
+            <Button id="settingsButton" fx:id="settingsButton" mnemonicParsing="false" prefHeight="32.0" style="-fx-background-color: #008CBA;" textFill="WHITE">
+               <graphic>
+                  <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@cogwheel.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" spacing="10.0">
+         <children>
+            <RadioButton id="radioButtonUppercase" fx:id="radioButtonUppercase" mnemonicParsing="false" selected="true" text="Uppercase">
+               <toggleGroup>
+                  <ToggleGroup fx:id="group" />
+               </toggleGroup>
+            </RadioButton>
+            <RadioButton id="radioButtonLowercase" fx:id="radioButtonLowercase" mnemonicParsing="false" text="Lowercase" toggleGroup="$group" />
+            <RadioButton id="radioButtonMixedcase" fx:id="radioButtonMixedcase" mnemonicParsing="false" text="Mixedcase" toggleGroup="$group" />
+         </children>
+      </HBox>
+   </children>
+</VBox>

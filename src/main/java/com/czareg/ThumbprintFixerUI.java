@@ -1,5 +1,6 @@
 package com.czareg;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -10,47 +11,44 @@ import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Pos;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class ThumbprintFixerUI extends Application {
 
-	private static final String UPPERCASE = "Uppercase";
-	private static final String LOWERCASE = "Lowercase";
-	private static final String MIXEDCASE = "Mixedcase";
-	private static final String TOOLTIP_TEXT = "Enter thumbprint without colons.";
-	private static final String TEXTFIELD_PROPMPT_TEXT = "Enter thumbprint here.";
-	private static final String BUTTON_TEXT = "Fix thumbprint";
 	private static final String ICON_FILENAME = "icon.png";
 	private static final String APPLICATION_TITLE = "Thumbprint Fixer";
+	private static final String BUTTON_TEXT = "Fix Thumbprint";
+	@FXML
 	private TextField textField;
+	@FXML
 	private Button fixButton;
-	ExecutorService executorService;
+	@FXML
+	private Button settingsButton;
+	@FXML
+	private ToggleGroup group;
+	@FXML
+	private RadioButton radioButtonUppercase;
+	@FXML
+	private RadioButton radioButtonLowercase;
+	@FXML
+	private RadioButton radioButtonMixedcase;
 
 	@Override
-	public void start(Stage stage) {
-		executorService = Executors.newFixedThreadPool(1);
-		HBox controlsHBox = createTextFieldAndButtonHBox();
-		HBox radioBtnsHBox = createRadioHBox();
-		VBox vbox = new VBox();
-		vbox.getChildren().addAll(controlsHBox, radioBtnsHBox);
-		vbox.setAlignment(Pos.CENTER);
-		StackPane stackPane = new StackPane(vbox);
-		Scene scene = new Scene(stackPane, 540, 60);
+	public void start(Stage stage) throws IOException {
+		Parent root = FXMLLoader.load(getClass().getResource("/layout.fxml"));
+		Scene scene = new Scene(root, 580, 60);
 		stage.setTitle(APPLICATION_TITLE);
 		stage.setResizable(false);
 		stage.setScene(scene);
@@ -58,8 +56,17 @@ public class ThumbprintFixerUI extends Application {
 		stage.show();
 	}
 
-	private HBox createRadioHBox() {
-		final ToggleGroup group = new ToggleGroup();
+	@FXML
+	private void initialize() {
+		configureTextfield();
+		innitializeGroupListener();
+		innitializeFixButtonOnAction();
+	}
+
+	private void innitializeGroupListener() {
+		radioButtonUppercase.setUserData(StringFormat.UPPERCASE);
+		radioButtonLowercase.setUserData(StringFormat.LOWERCASE);
+		radioButtonMixedcase.setUserData(StringFormat.MIXEDCASE);
 		group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
 			@Override
 			public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
@@ -71,59 +78,22 @@ public class ThumbprintFixerUI extends Application {
 				}
 			}
 		});
-		RadioButton rb1 = new RadioButton(UPPERCASE);
-		rb1.setToggleGroup(group);
-		rb1.setSelected(true);
-		rb1.setUserData(StringFormat.UPPERCASE);
-		rb1.setId("radioButtonUppercase");
-		RadioButton rb2 = new RadioButton(LOWERCASE);
-		rb2.setToggleGroup(group);
-		rb2.setUserData(StringFormat.LOWERCASE);
-		rb2.setId("radioButtonLowercase");
-		RadioButton rb3 = new RadioButton(MIXEDCASE);
-		rb3.setToggleGroup(group);
-		rb3.setUserData(StringFormat.MIXEDCASE);
-		rb3.setId("radioButtonMixedcase");
-		HBox hb = new HBox();
-		hb.getChildren().addAll(rb1, rb2, rb3);
-		hb.setSpacing(10);
-		hb.setAlignment(Pos.CENTER);
-		return hb;
 	}
 
-	private HBox createTextFieldAndButtonHBox() {
-		textField = new TextField();
-		configureTextfield(textField);
-		fixButton = new Button(BUTTON_TEXT);
-		fixButton.setId("fixButton");
-		fixButton.setOnAction(createFixButtonAction(textField));
-		fixButton.setDefaultButton(true);
-		HBox hb = new HBox();
-		hb.getChildren().addAll(textField, fixButton);
-		hb.setSpacing(10);
-		hb.setAlignment(Pos.CENTER);
-		return hb;
-	}
-
-	private void configureTextfield(final TextField textField) {
-		textField.setMinWidth(400.0);
-		textField.setId("textField");
-		textField.setTooltip(new Tooltip(TOOLTIP_TEXT));
-		final Clipboard clipboard = Clipboard.getSystemClipboard();
-		if (clipboard.hasString()) {
-			textField.setText(clipboard.getString());
-		} else {
-			textField.setPromptText(TEXTFIELD_PROPMPT_TEXT);
-		}
-	}
-
-	private EventHandler<ActionEvent> createFixButtonAction(final TextField textField) {
-		return (ActionEvent e) -> {
+	private void innitializeFixButtonOnAction() {
+		fixButton.setOnAction((ActionEvent e) -> {
 			if (!textField.getText().isEmpty()) {
 				makeThumbprint(textField.getText());
 			}
 			textField.requestFocus();
-		};
+		});
+	}
+
+	private void configureTextfield() {
+		final Clipboard clipboard = Clipboard.getSystemClipboard();
+		if (clipboard.hasString()) {
+			textField.setText(clipboard.getString());
+		}
 	}
 
 	private void makeThumbprint(String userInput) {
@@ -143,12 +113,8 @@ public class ThumbprintFixerUI extends Application {
 			copyResultToClipboard(thumbprint);
 		});
 
+		ExecutorService executorService = Executors.newFixedThreadPool(1);
 		executorService.execute(task);
-	}
-
-	@Override
-	public void stop() throws Exception {
-		super.stop();
 		executorService.shutdown();
 	}
 
@@ -160,6 +126,6 @@ public class ThumbprintFixerUI extends Application {
 	}
 
 	public static void main() {
-		launch();
+		launch(ThumbprintFixerUI.class);
 	}
 }
