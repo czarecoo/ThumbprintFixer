@@ -1,7 +1,7 @@
 
 # Created by https://www.gitignore.io/api/java,linux,maven,windows,eclipse,netbeans,intellij
 # Edit at https://www.gitignore.io/?templates=java,linux,maven,windows,eclipse,netbeans,intellij
-
+*.properties
 ### Eclipse ###
 .metadata
 bin/
