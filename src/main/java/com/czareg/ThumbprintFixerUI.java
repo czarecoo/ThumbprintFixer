@@ -60,7 +60,14 @@ public class ThumbprintFixerUI extends Application {
 	private void initialize() {
 		configureTextfield();
 		innitializeGroupListener();
-		innitializeFixButtonOnAction();
+		innitializeFixButtonOnClickAction();
+		innitializeSettingsButtonOnClickAction();
+	}
+
+	private void innitializeSettingsButtonOnClickAction() {
+		settingsButton.setOnAction((ActionEvent e) -> {
+			new ProxyDialogUI().open();
+		});
 	}
 
 	private void innitializeGroupListener() {
@@ -80,7 +87,7 @@ public class ThumbprintFixerUI extends Application {
 		});
 	}
 
-	private void innitializeFixButtonOnAction() {
+	private void innitializeFixButtonOnClickAction() {
 		fixButton.setOnAction((ActionEvent e) -> {
 			if (!textField.getText().isEmpty()) {
 				makeThumbprint(textField.getText());

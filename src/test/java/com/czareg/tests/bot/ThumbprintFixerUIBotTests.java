@@ -1,5 +1,7 @@
 package com.czareg.tests.bot;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
@@ -16,7 +18,7 @@ import javafx.stage.Stage;
 
 public class ThumbprintFixerUIBotTests extends ApplicationTest {
 	@Override
-	public void start(Stage stage) {
+	public void start(Stage stage) throws IOException {
 		final Clipboard clipboard = Clipboard.getSystemClipboard();
 		clipboard.clear();
 		new ThumbprintFixerUI().start(stage);

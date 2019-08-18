@@ -2,6 +2,8 @@ package com.czareg.tests.bot;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 import org.testfx.api.FxAssert;
 import org.testfx.framework.junit5.ApplicationTest;
@@ -20,7 +22,7 @@ class ThumbprintFixerUIClipboardFunctionalityBotTests extends ApplicationTest {
 	private Clipboard clipboard;
 
 	@Override
-	public void start(Stage stage) {
+	public void start(Stage stage) throws IOException {
 		clipboard = Clipboard.getSystemClipboard();
 		final ClipboardContent content = new ClipboardContent();
 		content.putString(BAD_THUMBPRINT_FROM_CLIPBOARD);
