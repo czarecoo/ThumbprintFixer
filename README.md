@@ -1,6 +1,6 @@
 # ThumbprintFixer
 This app inserts colons to colonless thumbprint.
-Click [here](https://github.com/czarecoo/ThumbprintFixer/releases/download/1.1/ThumbprintFixer-1.1.jar) to download version 1.1.
+Click [here](https://github.com/czarecoo/ThumbprintFixer/releases) to download newest version.
 (GUI is windows only)
 
 ## How to use Application
@@ -27,6 +27,10 @@ From version 1.1 you can setup proxy. The window will open when you click on cog
 Your proxy data will be saved in properties file located next to your jar.
 ![4](https://www.dropbox.com/s/iwn2r9r99lhvuov/5.png?raw=1)
 
+You can also use the application from command line:
+* If you pass 0 parameters the UI will start (java -jar jarfile)
+* If you pass 1 parameter the thumbprint will be created without proxy (java -jar jarfile somesite.com).
+* If you pass 3 parameters the thumbprint will be created with proxy (java -jar jarfile somesite.com someProxyServer someProxyPort).
 
 ## Installation
 Type
