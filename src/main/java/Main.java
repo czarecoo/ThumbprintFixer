@@ -34,7 +34,7 @@ public class Main {
 	private static void printHelp() {
 		System.out.println("Pass 1 parameter to make thumbprint without proxy (java -jar google.com)");
 		System.out.println(
-				"Pass 3 parameters to make thumbprint without proxy (java -jar google.com proxyServer proxyPort)");
+				"Pass 3 parameters to make thumbprint with proxy (java -jar google.com proxyServer proxyPort)");
 	}
 
 	private static String makeThumbprint(String userInput, ProxyData proxyData) {
