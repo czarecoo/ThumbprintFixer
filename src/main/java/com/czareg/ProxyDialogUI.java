@@ -3,6 +3,9 @@ package com.czareg;
 import java.io.IOException;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.czareg.model.ProxyData;
 import com.czareg.utils.PropertiesHandler;
 
@@ -17,6 +20,7 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 
 public class ProxyDialogUI {
+	static final Logger LOG = LoggerFactory.getLogger(ProxyDialogUI.class);
 
 	private static final String ICON_FILENAME = "cogwheel.png";
 
@@ -31,7 +35,8 @@ public class ProxyDialogUI {
 		dialog.getDialogPane().setContent(grid);
 
 		setResultConverter(dialog, serverTextField, portTextField);
-
+		LOG.info("Opened proxy window with values server: {} and port: {}", serverTextField.getText(),
+				portTextField.getText());
 		Optional<Pair<String, String>> result = dialog.showAndWait();
 
 		processResult(result);
@@ -41,10 +46,12 @@ public class ProxyDialogUI {
 		ProxyData proxyData;
 		try {
 			proxyData = PropertiesHandler.readProxyData();
-			serverTextField.setText(proxyData.getServer());
-			portTextField.setText(String.valueOf(proxyData.getPort()));
+			if (proxyData != null) {
+				serverTextField.setText(proxyData.getServer());
+				portTextField.setText(String.valueOf(proxyData.getPort()));
+			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.error("Could not read proxy data", e);
 		}
 	}
 
@@ -54,7 +61,7 @@ public class ProxyDialogUI {
 				ProxyData proxyData = new ProxyData(pair.getKey(), pair.getValue());
 				PropertiesHandler.writeProxyData(proxyData);
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOG.error("Could not write proxy data", e);
 			}
 		});
 	}

@@ -15,6 +15,16 @@ import configs.Config;
 import exceptions.GettingThumbprintException;
 
 public class ThumbprintGetterTests {
+
+	@Test
+	public void testHttpUrlValidation3() {
+		String goodUrl = "http://google.com";
+
+		boolean result = ThumbprintGetter.isUrlValid(goodUrl);
+
+		System.out.println(result + " " + goodUrl);
+	}
+
 	@Test
 	public void testHttpUrlValidation() {
 		String goodUrl = "http://google.com";

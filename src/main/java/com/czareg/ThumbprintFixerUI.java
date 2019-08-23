@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.czareg.model.StringFormat;
 import com.czareg.utils.ThumbprintMaker;
 
@@ -26,7 +29,7 @@ import javafx.scene.input.ClipboardContent;
 import javafx.stage.Stage;
 
 public class ThumbprintFixerUI extends Application {
-
+	static final Logger LOG = LoggerFactory.getLogger(ThumbprintFixerUI.class);
 	private static final String ICON_FILENAME = "icon.png";
 	private static final String APPLICATION_TITLE = "Thumbprint Fixer";
 	private static final String BUTTON_TEXT = "Fix Thumbprint";
@@ -53,6 +56,7 @@ public class ThumbprintFixerUI extends Application {
 		stage.setResizable(false);
 		stage.setScene(scene);
 		stage.getIcons().add(new Image(ICON_FILENAME));
+		LOG.info("Started UI");
 		stage.show();
 	}
 
@@ -99,7 +103,9 @@ public class ThumbprintFixerUI extends Application {
 	private void configureTextfield() {
 		final Clipboard clipboard = Clipboard.getSystemClipboard();
 		if (clipboard.hasString()) {
-			textField.setText(clipboard.getString());
+			String clipboardValue = clipboard.getString();
+			textField.setText(clipboardValue);
+			LOG.info("Clipboard value: {}", clipboardValue);
 		}
 	}
 
@@ -109,6 +115,7 @@ public class ThumbprintFixerUI extends Application {
 		task.setOnRunning((succeesesEvent) -> {
 			fixButton.setDisable(true);
 			fixButton.setText("Processing.");
+			LOG.info("Creating thumbprint from user input: {}", userInput);
 		});
 
 		task.setOnSucceeded((succeededEvent) -> {
@@ -117,6 +124,7 @@ public class ThumbprintFixerUI extends Application {
 
 			String thumbprint = task.getValue();
 			textField.setText(thumbprint);
+			LOG.info("Setting created thumbprint: {} to textfield", thumbprint);
 			copyResultToClipboard(thumbprint);
 		});
 

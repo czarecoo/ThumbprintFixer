@@ -8,12 +8,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.czareg.model.ProxyData;
 
 public class PropertiesHandler {
 	private static final String PATH_TO_CONFIG_PROPERTIES = "ThumbprintFixerConfig.properties";
 	private static final String PROXY_PORT_PROPERTY = "proxy.port";
 	private static final String PROXY_SERVER_PROPERTY = "proxy.server";
+	static final Logger LOG = LoggerFactory.getLogger(PropertiesHandler.class);
 
 	private PropertiesHandler() {
 	}
@@ -24,7 +28,7 @@ public class PropertiesHandler {
 			Properties prop = new Properties();
 			prop.setProperty(PROXY_SERVER_PROPERTY, proxyData.getServer());
 			prop.setProperty(PROXY_PORT_PROPERTY, proxyData.getPort());
-			System.out.println(prop);
+			LOG.debug(prop.toString());
 			prop.store(output, null);
 		}
 	}
@@ -37,11 +41,11 @@ public class PropertiesHandler {
 			String server = prop.getProperty(PROXY_SERVER_PROPERTY);
 			String port = prop.getProperty(PROXY_PORT_PROPERTY);
 			if (!server.isEmpty() && !port.isEmpty()) {
-				System.out.println(prop.getProperty(PROXY_SERVER_PROPERTY));
-				System.out.println(prop.getProperty(PROXY_PORT_PROPERTY));
+				LOG.debug("Server property read: {}", server);
+				LOG.debug("Port property read: {}", port);
 				return new ProxyData(prop.getProperty(PROXY_SERVER_PROPERTY), prop.getProperty(PROXY_PORT_PROPERTY));
 			} else {
-				throw new IOException("Empty properties detected.");
+				return null;
 			}
 		}
 	}
@@ -50,17 +54,17 @@ public class PropertiesHandler {
 		try {
 			File file = new File(PATH_TO_CONFIG_PROPERTIES);
 			if (!file.exists()) {
-				file.createNewFile();
+				LOG.info("Created file {}", file.createNewFile());
 				try (OutputStream output = new FileOutputStream(PATH_TO_CONFIG_PROPERTIES)) {
 					Properties prop = new Properties();
 					prop.setProperty(PROXY_SERVER_PROPERTY, "");
 					prop.setProperty(PROXY_PORT_PROPERTY, "");
-					System.out.println(prop);
+					LOG.debug("Saving properties: {}", prop);
 					prop.store(output, null);
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.error("Failed to create file", e);
 		}
 	}
 }
