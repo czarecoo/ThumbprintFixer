@@ -76,7 +76,7 @@ public class ThumbprintGetterTests {
 		String url = "facebook.com";
 
 		String thumbprint = ThumbprintGetter.get(url);
-		System.out.print(thumbprint);
+
 		validateThumbprint(thumbprint);
 	}
 

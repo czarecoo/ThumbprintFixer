@@ -11,43 +11,57 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.czareg.model.ProxyData;
-
 public class PropertiesHandler {
 	private static final String PATH_TO_CONFIG_PROPERTIES = "ThumbprintFixerConfig.properties";
-	private static final String PROXY_PORT_PROPERTY = "proxy.port";
-	private static final String PROXY_SERVER_PROPERTY = "proxy.server";
+	private static final String DEFAULT_URL_PROPERTY = "default.url";
+	private static final String COPY_TO_CLIPBOARD_PROPERTY = "copy.to.clipboard";
 	static final Logger LOG = LoggerFactory.getLogger(PropertiesHandler.class);
 
 	private PropertiesHandler() {
 	}
 
-	public static void writeProxyData(ProxyData proxyData) throws IOException {
+	public static void writeDefaultUrl(String url) {
+		writeToProperties(DEFAULT_URL_PROPERTY, url);
+	}
+
+	public static String readDefaultUrl() {
+		return readFromProperties(DEFAULT_URL_PROPERTY);
+	}
+
+	public static void writeCopyToClipboard(boolean bool) {
+		writeToProperties(COPY_TO_CLIPBOARD_PROPERTY, Boolean.toString(bool));
+	}
+
+	public static boolean readCopyToClipboard() {
+		return Boolean.getBoolean(readFromProperties(COPY_TO_CLIPBOARD_PROPERTY));
+	}
+
+	private static void writeToProperties(String property, String value) {
 		createFileIfNotExists();
-		try (OutputStream output = new FileOutputStream(PATH_TO_CONFIG_PROPERTIES)) {
-			Properties prop = new Properties();
-			prop.setProperty(PROXY_SERVER_PROPERTY, proxyData.getServer());
-			prop.setProperty(PROXY_PORT_PROPERTY, proxyData.getPort());
-			LOG.debug(prop.toString());
-			prop.store(output, null);
+		Properties prop = new Properties();
+		try {
+			try (InputStream input = new FileInputStream(PATH_TO_CONFIG_PROPERTIES)) {
+				prop.load(input);
+			}
+			try (OutputStream output = new FileOutputStream(PATH_TO_CONFIG_PROPERTIES)) {
+				prop.setProperty(property, value);
+				prop.store(output, null);
+			}
+		} catch (IOException e) {
+			LOG.error(String.format("Failed to write property: %s with value: %s to file", property, value), e);
 		}
 	}
 
-	public static ProxyData readProxyData() throws IOException {
+	private static String readFromProperties(String property) {
 		createFileIfNotExists();
 		try (InputStream input = new FileInputStream(PATH_TO_CONFIG_PROPERTIES)) {
 			Properties prop = new Properties();
 			prop.load(input);
-			String server = prop.getProperty(PROXY_SERVER_PROPERTY);
-			String port = prop.getProperty(PROXY_PORT_PROPERTY);
-			if (!server.isEmpty() && !port.isEmpty()) {
-				LOG.debug("Server property read: {}", server);
-				LOG.debug("Port property read: {}", port);
-				return new ProxyData(prop.getProperty(PROXY_SERVER_PROPERTY), prop.getProperty(PROXY_PORT_PROPERTY));
-			} else {
-				return null;
-			}
+			return prop.getProperty(property, null);
+		} catch (IOException e) {
+			LOG.error(String.format("Failed to read property: %s from file", property), e);
 		}
+		return null;
 	}
 
 	private static void createFileIfNotExists() {
@@ -57,8 +71,8 @@ public class PropertiesHandler {
 				LOG.info("Created file {}", file.createNewFile());
 				try (OutputStream output = new FileOutputStream(PATH_TO_CONFIG_PROPERTIES)) {
 					Properties prop = new Properties();
-					prop.setProperty(PROXY_SERVER_PROPERTY, "");
-					prop.setProperty(PROXY_PORT_PROPERTY, "");
+					prop.setProperty(DEFAULT_URL_PROPERTY, "https://10.172.193.:3170");
+					prop.setProperty(COPY_TO_CLIPBOARD_PROPERTY, "true");
 					LOG.debug("Saving properties: {}", prop);
 					prop.store(output, null);
 				}

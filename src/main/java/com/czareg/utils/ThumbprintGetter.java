@@ -1,9 +1,7 @@
 package com.czareg.utils;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
-import java.net.Proxy;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.MessageDigest;
@@ -17,14 +15,11 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLPeerUnverifiedException;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.czareg.model.ProxyData;
 
 import exceptions.GettingThumbprintException;
 
@@ -91,31 +86,19 @@ public class ThumbprintGetter {
 		URL preparedUrl = prepareUrl(url);
 		LOG.debug("Prepared url: {}", preparedUrl);
 		trustAllHosts();
-		Proxy proxy = createProxy();
-		LOG.debug("Created proxy: {}", proxy);
-
-		HttpsURLConnection con = openConnection(preparedUrl, proxy);
+		HttpsURLConnection con = openConnection(preparedUrl);
 		con.setHostnameVerifier(DO_NOT_VERIFY);
 		con.connect();
 		return con;
 	}
 
-	private static HttpsURLConnection openConnection(URL preparedUrl, Proxy proxy) throws IOException {
-		HttpsURLConnection con;
-		if (proxy == null) {
-			con = (HttpsURLConnection) preparedUrl.openConnection();
-		} else {
-			con = (HttpsURLConnection) preparedUrl.openConnection(proxy);
-		}
-		return con;
+	private static HttpsURLConnection openConnection(URL preparedUrl) throws IOException {
+		return (HttpsURLConnection) preparedUrl.openConnection();
 	}
 
-	static final HostnameVerifier DO_NOT_VERIFY = new HostnameVerifier() {
-		@Override
-		public boolean verify(String hostname, SSLSession session) {
-			// skip verification
-			return true;
-		}
+	static final HostnameVerifier DO_NOT_VERIFY = (a, b) -> {
+		// skip verification
+		return true;
 	};
 
 	private static void trustAllHosts() {
@@ -145,14 +128,5 @@ public class ThumbprintGetter {
 		} catch (KeyManagementException e) {
 			LOG.error("Could not get innitialize SSLContext", e);
 		}
-	}
-
-	private static Proxy createProxy() throws IOException {
-		ProxyData proxyData = PropertiesHandler.readProxyData();
-		if (proxyData == null) {
-			LOG.warn("Empty properties detected. Proceeding without proxy");
-			return null;
-		}
-		return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyData.getServer(), proxyData.getPortInt()));
 	}
 }

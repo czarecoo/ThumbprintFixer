@@ -7,22 +7,17 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.czareg.model.StringFormat;
-import com.czareg.utils.ThumbprintMaker;
+import com.czareg.utils.PropertiesHandler;
 
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.RadioButton;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -38,20 +33,12 @@ public class ThumbprintFixerUI extends Application {
 	@FXML
 	private Button fixButton;
 	@FXML
-	private Button settingsButton;
-	@FXML
-	private ToggleGroup group;
-	@FXML
-	private RadioButton radioButtonUppercase;
-	@FXML
-	private RadioButton radioButtonLowercase;
-	@FXML
-	private RadioButton radioButtonMixedcase;
+	private CheckBox copyCheckbox;
 
 	@Override
 	public void start(Stage stage) throws IOException {
 		Parent root = FXMLLoader.load(getClass().getResource("/layout.fxml"));
-		Scene scene = new Scene(root, 580, 60);
+		Scene scene = new Scene(root, 540, 60);
 		stage.setTitle(APPLICATION_TITLE);
 		stage.setResizable(false);
 		stage.setScene(scene);
@@ -63,32 +50,9 @@ public class ThumbprintFixerUI extends Application {
 	@FXML
 	private void initialize() {
 		configureTextfield();
-		innitializeGroupListener();
 		innitializeFixButtonOnClickAction();
-		innitializeSettingsButtonOnClickAction();
-	}
-
-	private void innitializeSettingsButtonOnClickAction() {
-		settingsButton.setOnAction((ActionEvent e) -> {
-			new ProxyDialogUI().open();
-		});
-	}
-
-	private void innitializeGroupListener() {
-		radioButtonUppercase.setUserData(StringFormat.UPPERCASE);
-		radioButtonLowercase.setUserData(StringFormat.LOWERCASE);
-		radioButtonMixedcase.setUserData(StringFormat.MIXEDCASE);
-		group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-			@Override
-			public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
-				if (newValue.getUserData() != null) {
-					ThumbprintMaker.format = (StringFormat) newValue.getUserData();
-					if (textField != null) {
-						textField.setText(ThumbprintMaker.applyCurrentFormat(textField.getText()));
-					}
-				}
-			}
-		});
+		copyCheckbox.selectedProperty()
+				.addListener((observable, oldValue, newValue) -> PropertiesHandler.writeCopyToClipboard(newValue));
 	}
 
 	private void innitializeFixButtonOnClickAction() {
@@ -101,31 +65,31 @@ public class ThumbprintFixerUI extends Application {
 	}
 
 	private void configureTextfield() {
-		final Clipboard clipboard = Clipboard.getSystemClipboard();
-		if (clipboard.hasString()) {
-			String clipboardValue = clipboard.getString();
-			textField.setText(clipboardValue);
-			LOG.info("Clipboard value: {}", clipboardValue);
+		String defaultUrl = PropertiesHandler.readDefaultUrl();
+		if (defaultUrl != null) {
+			textField.setText(defaultUrl);
 		}
 	}
 
 	private void makeThumbprint(String userInput) {
 		CreateThumbprintTask task = new CreateThumbprintTask(userInput);
 
-		task.setOnRunning((succeesesEvent) -> {
+		task.setOnRunning(succeesesEvent -> {
 			fixButton.setDisable(true);
 			fixButton.setText("Processing.");
 			LOG.info("Creating thumbprint from user input: {}", userInput);
 		});
 
-		task.setOnSucceeded((succeededEvent) -> {
+		task.setOnSucceeded(succeededEvent -> {
 			fixButton.setDisable(false);
 			fixButton.setText(BUTTON_TEXT);
-
 			String thumbprint = task.getValue();
 			textField.setText(thumbprint);
 			LOG.info("Setting created thumbprint: {} to textfield", thumbprint);
-			copyResultToClipboard(thumbprint);
+			PropertiesHandler.writeDefaultUrl(userInput);
+			if (copyCheckbox.isSelected()) {
+				copyResultToClipboard(thumbprint);
+			}
 		});
 
 		ExecutorService executorService = Executors.newFixedThreadPool(1);
