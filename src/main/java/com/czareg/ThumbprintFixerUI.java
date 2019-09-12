@@ -51,6 +51,7 @@ public class ThumbprintFixerUI extends Application {
 	private void initialize() {
 		configureTextfield();
 		innitializeFixButtonOnClickAction();
+		copyCheckbox.setSelected(PropertiesHandler.readCopyToClipboard());
 		copyCheckbox.selectedProperty()
 				.addListener((observable, oldValue, newValue) -> PropertiesHandler.writeCopyToClipboard(newValue));
 	}

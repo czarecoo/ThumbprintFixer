@@ -33,7 +33,7 @@ public class PropertiesHandler {
 	}
 
 	public static boolean readCopyToClipboard() {
-		return Boolean.getBoolean(readFromProperties(COPY_TO_CLIPBOARD_PROPERTY));
+		return Boolean.valueOf(readFromProperties(COPY_TO_CLIPBOARD_PROPERTY));
 	}
 
 	private static void writeToProperties(String property, String value) {
