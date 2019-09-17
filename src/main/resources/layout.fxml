@@ -11,7 +11,8 @@
       <HBox alignment="CENTER" spacing="10.0">
          <children>
             <TextField id="textField" fx:id="textField" minWidth="400.0" promptText="Enter thumbprint without colons or url." />
-            <Button id="fixButton" fx:id="fixButton" defaultButton="true" mnemonicParsing="false" prefHeight="32.0" prefWidth="102.4" style="-fx-background-color: #008CBA;" text="Fix thumbprint" textFill="WHITE" />
+            <Button id="fixButton" fx:id="fixButton" defaultButton="true" mnemonicParsing="false" prefWidth="105.0" style="-fx-background-color: #008CBA;" text="Fix thumbprint" textFill="WHITE" />
+            <Button id="resetButton" fx:id="resetButton" mnemonicParsing="false" style="-fx-background-color: #ff0000;" text="Reset" textFill="WHITE" />
          </children>
       </HBox>
       <HBox alignment="CENTER">

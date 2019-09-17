@@ -21,6 +21,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class ThumbprintFixerUI extends Application {
@@ -33,27 +35,45 @@ public class ThumbprintFixerUI extends Application {
 	@FXML
 	private Button fixButton;
 	@FXML
+	private Button resetButton;
+	@FXML
 	private CheckBox copyCheckbox;
 
 	@Override
 	public void start(Stage stage) throws IOException {
 		Parent root = FXMLLoader.load(getClass().getResource("/layout.fxml"));
-		Scene scene = new Scene(root, 540, 60);
+		Scene scene = new Scene(root, 600, 60);
 		stage.setTitle(APPLICATION_TITLE);
 		stage.setResizable(false);
 		stage.setScene(scene);
 		stage.getIcons().add(new Image(ICON_FILENAME));
+		handleEscapeShouldCloseApp(stage);
 		LOG.info("Started UI");
 		stage.show();
+	}
+
+	private void handleEscapeShouldCloseApp(Stage stage) {
+		stage.addEventHandler(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
+			if (KeyCode.ESCAPE == event.getCode()) {
+				stage.close();
+			}
+		});
 	}
 
 	@FXML
 	private void initialize() {
 		configureTextfield();
 		innitializeFixButtonOnClickAction();
-		copyCheckbox.setSelected(PropertiesHandler.readCopyToClipboard());
-		copyCheckbox.selectedProperty()
-				.addListener((observable, oldValue, newValue) -> PropertiesHandler.writeCopyToClipboard(newValue));
+		innitializeResetButtonOnClickAction();
+		innitializeCheckBox();
+
+	}
+
+	private void configureTextfield() {
+		String defaultUrl = PropertiesHandler.readDefaultUrl();
+		if (defaultUrl != null) {
+			textField.setText(defaultUrl);
+		}
 	}
 
 	private void innitializeFixButtonOnClickAction() {
@@ -65,11 +85,24 @@ public class ThumbprintFixerUI extends Application {
 		});
 	}
 
-	private void configureTextfield() {
+	private void innitializeResetButtonOnClickAction() {
+		resetButton.setOnAction((ActionEvent e) -> {
+			handleResetButton();
+		});
+	}
+
+	private void handleResetButton() {
 		String defaultUrl = PropertiesHandler.readDefaultUrl();
 		if (defaultUrl != null) {
 			textField.setText(defaultUrl);
+			fixButton.requestFocus();
 		}
+	}
+
+	private void innitializeCheckBox() {
+		copyCheckbox.setSelected(PropertiesHandler.readCopyToClipboard());
+		copyCheckbox.selectedProperty()
+				.addListener((observable, oldValue, newValue) -> PropertiesHandler.writeCopyToClipboard(newValue));
 	}
 
 	private void makeThumbprint(String userInput) {
@@ -78,12 +111,15 @@ public class ThumbprintFixerUI extends Application {
 		task.setOnRunning(succeesesEvent -> {
 			fixButton.setDisable(true);
 			fixButton.setText("Processing.");
+			resetButton.setDisable(true);
 			LOG.info("Creating thumbprint from user input: {}", userInput);
 		});
 
 		task.setOnSucceeded(succeededEvent -> {
 			fixButton.setDisable(false);
 			fixButton.setText(BUTTON_TEXT);
+			resetButton.setDisable(false);
+			resetButton.requestFocus();
 			String thumbprint = task.getValue();
 			textField.setText(thumbprint);
 			LOG.info("Setting created thumbprint: {} to textfield", thumbprint);
