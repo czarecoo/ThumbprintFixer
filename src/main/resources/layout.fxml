@@ -15,8 +15,9 @@
             <Button id="resetButton" fx:id="resetButton" mnemonicParsing="false" style="-fx-background-color: #ff0000;" text="Reset" textFill="WHITE" />
          </children>
       </HBox>
-      <HBox alignment="CENTER">
+      <HBox alignment="CENTER" spacing="10.0">
          <children>
+            <Button id="saveButton" fx:id="saveButton" mnemonicParsing="false" style="-fx-background-color: #008CBA;" text="Save textfield current value" textFill="WHITE" />
             <CheckBox id="copyCheckbox" fx:id="copyCheckbox" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" selected="true" text="Copy thumbprint to clipboard on success" />
          </children>
       </HBox>

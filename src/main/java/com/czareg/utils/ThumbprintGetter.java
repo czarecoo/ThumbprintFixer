@@ -77,7 +77,7 @@ public class ThumbprintGetter {
 			throws SSLPeerUnverifiedException, GettingThumbprintException {
 		Certificate[] certificates = con.getServerCertificates();
 		if (certificates.length < 1) {
-			throw new GettingThumbprintException("No certificates avaliable for " + url);
+			throw new GettingThumbprintException("No certificates avaliable for: " + url);
 		}
 		return certificates;
 	}

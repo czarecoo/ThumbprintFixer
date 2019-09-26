@@ -37,7 +37,10 @@ public class ThumbprintFixerUI extends Application {
 	@FXML
 	private Button resetButton;
 	@FXML
+	private Button saveButton;
+	@FXML
 	private CheckBox copyCheckbox;
+	CreateThumbprintTask task;
 
 	@Override
 	public void start(Stage stage) throws IOException {
@@ -65,8 +68,8 @@ public class ThumbprintFixerUI extends Application {
 		configureTextfield();
 		innitializeFixButtonOnClickAction();
 		innitializeResetButtonOnClickAction();
+		innitializeSaveButtonOnClickAction();
 		innitializeCheckBox();
-
 	}
 
 	private void configureTextfield() {
@@ -78,11 +81,15 @@ public class ThumbprintFixerUI extends Application {
 
 	private void innitializeFixButtonOnClickAction() {
 		fixButton.setOnAction((ActionEvent e) -> {
-			if (!textField.getText().isEmpty()) {
-				makeThumbprint(textField.getText());
-			}
-			textField.requestFocus();
+			handleFixButtonDefault();
 		});
+	}
+
+	private void handleFixButtonDefault() {
+		if (!textField.getText().isEmpty()) {
+			makeThumbprint(textField.getText());
+		}
+		textField.requestFocus();
 	}
 
 	private void innitializeResetButtonOnClickAction() {
@@ -95,7 +102,21 @@ public class ThumbprintFixerUI extends Application {
 		String defaultUrl = PropertiesHandler.readDefaultUrl();
 		if (defaultUrl != null) {
 			textField.setText(defaultUrl);
-			fixButton.requestFocus();
+		}
+		if (task != null) {
+			task.cancel();
+		}
+	}
+
+	private void innitializeSaveButtonOnClickAction() {
+		saveButton.setOnAction((ActionEvent e) -> {
+			handleSaveButton();
+		});
+	}
+
+	private void handleSaveButton() {
+		if (!textField.getText().isEmpty()) {
+			PropertiesHandler.writeDefaultUrl(textField.getText());
 		}
 	}
 
@@ -106,31 +127,36 @@ public class ThumbprintFixerUI extends Application {
 	}
 
 	private void makeThumbprint(String userInput) {
-		CreateThumbprintTask task = new CreateThumbprintTask(userInput);
+		CreateThumbprintTask tempTask = new CreateThumbprintTask(userInput);
 
-		task.setOnRunning(succeesesEvent -> {
+		tempTask.setOnRunning(succeesesEvent -> {
 			fixButton.setDisable(true);
 			fixButton.setText("Processing.");
-			resetButton.setDisable(true);
+			resetButton.setText("Cancel");
 			LOG.info("Creating thumbprint from user input: {}", userInput);
 		});
 
-		task.setOnSucceeded(succeededEvent -> {
+		tempTask.setOnSucceeded(succeededEvent -> {
 			fixButton.setDisable(false);
 			fixButton.setText(BUTTON_TEXT);
-			resetButton.setDisable(false);
-			resetButton.requestFocus();
-			String thumbprint = task.getValue();
+			resetButton.setText("Reset");
+			String thumbprint = tempTask.getValue();
 			textField.setText(thumbprint);
 			LOG.info("Setting created thumbprint: {} to textfield", thumbprint);
-			PropertiesHandler.writeDefaultUrl(userInput);
 			if (copyCheckbox.isSelected()) {
 				copyResultToClipboard(thumbprint);
 			}
 		});
 
+		tempTask.setOnCancelled(canceledEvent -> {
+			fixButton.setDisable(false);
+			fixButton.setText(BUTTON_TEXT);
+			resetButton.setText("Reset");
+		});
+
+		task = tempTask;
 		ExecutorService executorService = Executors.newFixedThreadPool(1);
-		executorService.execute(task);
+		executorService.execute(tempTask);
 		executorService.shutdown();
 	}
 
