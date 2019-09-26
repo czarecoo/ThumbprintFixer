@@ -1,5 +1,5 @@
 # ThumbprintFixer
-This app inserts colons to colonless thumbprint that it gets from provided url or userinput.
+This app fetches thumbprint from given url.
 Click [here](https://github.com/czarecoo/ThumbprintFixer/releases) to download newest version.
 (GUI is windows only)
 
